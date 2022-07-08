@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div style="float: left; margin: 10px;" >
+    <h3>검색 나이 범위 : [[${AgeGe}]]~[[${AgeLe}]]</h3>
+    <h3>검색 랭크 범위 : [[${RankGe}]]~[[${RankLe}]]</h3>
+    <h3>정렬 기준 : [[${SortType.description}]]</h3>
+    <br/>
+    <table>
+        <tr align="center">
+            <th style="width: 50px;">#</th>
+            <th style="width:100px;">이름</th>
+            <th style="width: 50px;">나이</th>
+            <th style="width:130px;">랭크</th>
+        </tr>
+        <tr th:each="player : ${playerList}" align="center">
+            <td th:text="${player.id}"/>
+            <td th:text="${player.name}"/>
+            <td th:text="${player.age}"/>
+            <td th:text="${player.rank}"/>
+        </tr>
+    </table>
+    <br/>
+    <button th:disabled="${hasPreviousPage == false}" th:onclick=
+            "|location.href='@{/player(page=${page-1},AgeGe=${AgeGe},AgeLe=${AgeLe},RankGe=${RankGe},RankLe=${RankLe},SortType=${SortType})}'|">이전페이지</button>
+    <span>[[${page}]]page / [[${totalPages}]]page</span>
+    <button th:disabled="${hasNextPage == false}"  th:onclick=
+            "|location.href='@{/player(page=${page+1},AgeGe=${AgeGe},AgeLe=${AgeLe},RankGe=${RankGe},RankLe=${RankLe},SortType=${SortType})}'|">다음페이지</button>
+
+</div>
+<div style="float: left; margin:10px;">
+    <form action="/player/search" th:object="${searchForm}" method="post"  style="border-style: solid; padding: 10px;">
+        <div>
+            <input type="number" th:field="*{ageGe}"/>
+            <label th:for="ageGe">살 이상</label>
+        </div>
+        <br/>
+        <div>
+            <input type="number" th:field="*{ageLe}"/>
+            <label th:for="ageLe">살 이하</label>
+        </div>
+        <br/>
+        <div>
+            <select th:field="*{rankGe}">
+                <option value="">티어</option>
+                <option th:each="rank: ${ranks}" th:value="${rank}" th:text="${rank}" />
+            </select>
+            <label th:for="*{rankGe}">이상</label>
+        </div>
+        <br/>
+        <div>
+            <select th:field="*{rankLe}">
+                <option value="">티어</option>
+                <option th:each="rank: ${ranks}" th:value="${rank}" th:text="${rank}" />
+            </select>
+            <label th:for="*{rankLe}">이하</label>
+        </div>
+        <br/>
+        <div>
+            <div>&lt;정렬기준&gt;</div>
+            <div th:each="sortType : ${sortTypes}">
+                <label th:for="${#ids.next('sortType')}" th:text="${sortType.description}"/>
+                <input type="radio" th:field="*{sortType}" th:value="${sortType}"/>
+            </div>
+            <script>
+                document.getElementById("sortType1").setAttribute("checked", "checked");
+            </script>
+        </div>
+        <br/><br/>
+        <div>
+            <button type="submit">검색</button>
+        </div>
+    </form>
+</div>
+<div style="float: left; margin: 10px;">
+    <form action="/player/add" th:object="${addPlayer}" method="post" style="border-style: solid; padding: 10px;">
+        <div>
+            <label th:for="name">이름 : </label>
+            <input type="text" th:field="*{name}"/>
+        </div>
+        <div>
+            <label th:for="age">나이 : </label>
+            <input type="number" th:field="*{age}"/>
+        </div>
+        <div>
+            <div>&lt;랭크&gt;</div>
+            <div th:each="rank : ${ranks}">
+                <label th:for="${#ids.next('rank')}" th:text="${rank}"/>
+                <input type="radio" th:field="*{rank}" th:value="${rank}"/>
+            </div>
+        </div>
+        <br/>
+        <div>
+            <button type="submit">선수 추가</button>
+        </div>
+    </form>
+    <br/><br/>
+    <form action="/player/remove" th:object="${removePlayer}" method="post" style="border-style: solid; padding: 10px;">
+        <div>
+            <label th:for="name">이름 : </label>
+            <input type="text" th:field="*{name}"/>
+        </div>
+        <br/>
+        <div>
+            <button type="submit">선수 제거</button>
+        </div>
+    </form>
+    <br/><br/>
+
+    <form action="/player/update" th:object="${updatePlayer}" method="post" style="border-style: solid; padding: 10px;">
+        <div>
+            <label th:for="id">아이디 : </label>
+            <input type="text" th:field="*{id}"/>
+        </div>
+        <div>
+            <label th:for="name">이름 : </label>
+            <input type="text" th:field="*{name}"/>
+        </div>
+        <div>
+            <label th:for="age">나이 : </label>
+            <input type="text" th:field="*{age}"/>
+        </div>
+        <div>
+            <div>&lt;랭크&gt;</div>
+            <div th:each="rank : ${ranks}">
+                <label th:for="${#ids.next('rank')}" th:text="${rank}"/>
+                <input type="radio" th:field="*{rank}" th:value="${rank}"/>
+            </div>
+        </div>
+        <br/>
+        <div>
+            <button type="submit">선수 수정</button>
+        </div>
+    </form>
+</div>
+</body>
+</html>

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div>
+    <form action="/member/add" method="post" th:object="${form}">
+        <label th:for="*{name}">이름 : </label>
+        <input type="text" th:field="*{name}" />
+        <br/>
+        <label th:for="*{age}">나이 : </label>
+        <input type="number" th:field="*{age}" />
+        <br/>
+        <label th:for="*{teamId}">팀 : </label>
+        <select th:field="*{teamId}">
+            <option value="">팀 선택</option>
+            <option th:each="team : ${teamList}"
+                    th:value="${team.id}"
+                    th:text="${team.name}"/>
+        </select>
+        <br/><br/>
+        <button type="submit">추가</button>
+    </form>
+</div>
+</body>
+</html>
