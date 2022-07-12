@@ -62,47 +62,54 @@ public class PlayerController {
     }
 
     @PostMapping("/add")
-    public String add(@ModelAttribute Player addPlayer, HttpServletResponse response) throws IOException {
+    public String add(@ModelAttribute Player addPlayer, Model model){
         if(playerRepository.findByName(addPlayer.getName()) == null) {
             playerRepository.save(addPlayer);
-            alert(response, "선수 추가 완료!");
+            model.addAttribute("msg", "선수 추가 완료!");
+            model.addAttribute("url", "/player");
+            return "player/message";
         } else {
-            alert(response, "선수 이름 중복!");
+            model.addAttribute("msg", "선수 이름 중복!");
+            model.addAttribute("url", "/player");
+            return "player/message";
         }
-
-        return "redirect:/player";
     }
 
     @PostMapping("/remove")
-    public String remove(@ModelAttribute Player removePlayer, HttpServletResponse response) throws IOException {
+    public String remove(@ModelAttribute Player removePlayer, Model model){
         if(playerRepository.findByName(removePlayer.getName()) != null) {
             Player player = playerRepository.findByName(removePlayer.getName());
             playerRepository.delete(player);
-            alert(response, "선수 제거 완료!");
+            model.addAttribute("msg", "선수 제거 완료!");
+            model.addAttribute("url", "/player");
+            return "player/message";
         } else {
-
-            alert(response, "해당 선수 없음!");
+            model.addAttribute("msg", "해당 선수 없음!");
+            model.addAttribute("url", "/player");
+            return "player/message";
         }
-        return "redirect:/player";
     }
 
     @PostMapping("/update")
-    public String update(@ModelAttribute Player updatePlayer, HttpServletResponse response) throws IOException {
+    public String update(@ModelAttribute Player updatePlayer, Model model){
         if(!playerRepository.findById(updatePlayer.getId()).isEmpty()) {
             Player player = playerRepository.findById(updatePlayer.getId()).get();
             player.setName(updatePlayer.getName());
             player.setAge(updatePlayer.getAge());
             player.setRank(updatePlayer.getRank());
             playerRepository.save(player);
-            alert(response, "선수 수정 완료!");
+            model.addAttribute("msg", "선수 수정 완료!");
+            model.addAttribute("url", "/player");
+            return "player/message";
         } else {
-            alert(response, "해당 선수 없음!");
+            model.addAttribute("msg", "해당 선수 없음!");
+            model.addAttribute("url", "/player");
+            return "player/message";
         }
-        return "redirect:/player";
     }
 
     @PostMapping("/search")
-    public String search(@ModelAttribute SearchForm form, HttpServletResponse response) throws IOException {
+    public String search(@ModelAttribute SearchForm form, Model model) throws IOException {
 
         if(form.getAgeGe() == null) { form.setAgeGe(0); }
         if(form.getAgeLe() == null) { form.setAgeLe(999); }
@@ -110,24 +117,19 @@ public class PlayerController {
         if(form.getRankLe() == null) { form.setRankLe(Rank.DIAMOND); }
 
         if(form.getAgeGe() > form.getAgeLe()) {
-            alert(response, "검색 조건 에러!");
-            return "redirect:/player";
+            model.addAttribute("msg", "검색 조건 에러!");
+            model.addAttribute("url", "/player");
+            return "player/message";
         }
         if(form.getRankGe().compareTo(form.getRankLe()) == 1) {
-            alert(response, "검색 조건 에러!");
-            return "redirect:/player";
+            model.addAttribute("msg", "검색 조건 에러!");
+            model.addAttribute("url", "/player");
+            return "player/message";
         }
 
         return "redirect:/player?page=1&AgeGe="+form.getAgeGe()+"&AgeLe="+form.getAgeLe()+
                 "&RankGe="+form.getRankGe()+"&RankLe="+form.getRankLe()+"&SortType="+form.getSortType();
      }
-
-     public void alert(HttpServletResponse response, String msg) throws IOException {
-        response.setContentType("text/html; charset=UTF-8");
-        PrintWriter out = response.getWriter();
-        out.println("<script>alert('" + msg + "'); location.href='/player';</script>");
-        out.flush();
-    }
 
     @PostConstruct
     public void init() {
